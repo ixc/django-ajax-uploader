@@ -1,16 +1,25 @@
+import datetime
 from io import FileIO, BufferedWriter
 import os
 
 from django.conf import settings
+from django.utils.encoding import force_unicode, smart_str
 
-from ajaxuploader.backends.base import AbstractUploadBackend
+from .. import settings as ajaxuploader_settings
+from .base import AbstractUploadBackend
 
 class LocalUploadBackend(AbstractUploadBackend):
-    UPLOAD_DIR = "uploads"
+    UPLOAD_DIR = ajaxuploader_settings.UPLOAD_DIRECTORY
+    # TODO: allow this to be overridden per-widget/view
 
     def setup(self, filename):
-        self._path = os.path.join(
-            settings.MEDIA_ROOT, self.UPLOAD_DIR, filename)
+        self._relative_path = os.path.normpath(
+            os.path.join(
+                force_unicode(
+                    datetime.datetime.now().strftime( # allow %Y, %s, etc
+                        smart_str(self.UPLOAD_DIR))),
+                filename))
+        self._path = os.path.join(settings.MEDIA_ROOT, self._relative_path)
         try:
             os.makedirs(os.path.realpath(os.path.dirname(self._path)))
         except:
@@ -21,6 +30,5 @@ class LocalUploadBackend(AbstractUploadBackend):
         self._dest.write(chunk)
 
     def upload_complete(self, request, filename):
-        path = settings.MEDIA_URL + self.UPLOAD_DIR + "/" + filename
-        self._dest.close() 
-        return {"path": path}
+        self._dest.close()
+        return {"path": self._relative_path}

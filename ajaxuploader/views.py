@@ -1,9 +1,7 @@
-from django.utils import simplejson as json
 from django.core.serializers.json import DjangoJSONEncoder
-
 from django.http import HttpResponse, HttpResponseBadRequest, Http404
-
-from ajaxuploader.backends.local import LocalUploadBackend
+from django.utils import simplejson as json
+from .backends.local import LocalUploadBackend
 
 class AjaxFileUploader(object):
     def __init__(self, backend=None, **kwargs):
