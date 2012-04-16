@@ -11,6 +11,7 @@ from django.conf import settings
 PREFIX = 'AJAXUPLOADER_'
 DEFAULT_SETTINGS = {
     'UPLOAD_DIRECTORY': os.path.join('uploads', 'ajax'),
+    'SANITIZE_FILENAME': lambda filename: filename,
     }
 
 def prefixed(string):

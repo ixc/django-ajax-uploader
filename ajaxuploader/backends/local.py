@@ -32,3 +32,6 @@ class LocalUploadBackend(AbstractUploadBackend):
     def upload_complete(self, request, filename):
         self._dest.close()
         return {"path": self._relative_path}
+
+    def update_filename(self, request, filename):
+        return ajaxuploader_settings.SANITIZE_FILENAME(filename)
